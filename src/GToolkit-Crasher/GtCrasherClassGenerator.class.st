@@ -8,7 +8,9 @@ Class {
 	#name : #GtCrasherClassGenerator,
 	#superclass : #Object,
 	#instVars : [
-		'numberConverter'
+		'numberConverter',
+		'words',
+		'instVars'
 	],
 	#category : #'GToolkit-Crasher'
 }
@@ -16,7 +18,7 @@ Class {
 { #category : #private }
 GtCrasherClassGenerator >> createClassPrefixed: aPrefix packaged: aPackageName index: aNumber [
 	^ Object subclass: (self generateClassNamePrefix: aPrefix index: aNumber) asSymbol
-		instanceVariableNames: self generateInstVars
+		instanceVariableNames: self pickInstVars
 		classVariableNames: ''
 		package: aPackageName
 ]
@@ -29,14 +31,17 @@ GtCrasherClassGenerator >> createClassesPrefixed: aPrefix packaged: aPackageName
 	[ 
 	
 		aMethodGenerator := GtCrasherMethodGenerator new.
-		theMethodPrefixes := self generateWords: 20.
+		theMethodPrefixes := self pickWords: 50.
 		
 		(1 to: aClassCount) do:[ :aClassIndex | 
 			| eachClass |
 			
 			eachClass := self createClassPrefixed: aPrefix packaged: aPackageName index: aClassIndex.
 			1 to: (20 to: 200) atRandom do: [ :aMethodIndex |
-				aMethodGenerator compileMethodNamed: theMethodPrefixes atRandom, (numberConverter convertToBase26: aMethodIndex) inClass: eachClass ] ]
+				| aMethodName |
+				
+				aMethodName := String streamContents: [ :aStream | aStream nextPutAll: theMethodPrefixes atRandom; nextPutAll: (numberConverter convertToBase26: aMethodIndex) ].
+				aMethodGenerator compileMethodNamed: aMethodName inClass: eachClass ] ]
 		displayingProgress:[ :aClassIndex | 'Generating class {1} out of {2}' format: { aClassIndex . aClassCount } ]
 
 	] ensure: [ EpMonitor current enable ]
@@ -44,22 +49,22 @@ GtCrasherClassGenerator >> createClassesPrefixed: aPrefix packaged: aPackageName
 
 { #category : #private }
 GtCrasherClassGenerator >> generateClassNamePrefix: aPrefix index: aNumber [
-	^ aPrefix, (numberConverter convertToBase26: aNumber)
+	^ String streamContents: [ :aStream | aStream nextPutAll: aPrefix; nextPutAll: (numberConverter convertToBase26: aNumber) ]
 ]
 
-{ #category : #private }
+{ #category : #initialization }
 GtCrasherClassGenerator >> generateInstVars [
 	| aSet |
 	aSet := self generateWords: 20 atRandom + 5.
 	^ String streamContents: [:s | aSet do: [:each | s << each asString] separatedBy: [s << ' ']]
 ]
 
-{ #category : #private }
+{ #category : #initialization }
 GtCrasherClassGenerator >> generateWord [
 	^ String streamContents: [ :aStream | (10 atRandom + 5) timesRepeat: [ aStream nextPut: Character alphabet atRandom ] ]
 ]
 
-{ #category : #private }
+{ #category : #initialization }
 GtCrasherClassGenerator >> generateWords: aNumber [
 	^ ((1 to: aNumber) collect: [ :i | self generateWord ]) copyWithoutDuplicates
 ]
@@ -68,5 +73,18 @@ GtCrasherClassGenerator >> generateWords: aNumber [
 GtCrasherClassGenerator >> initialize [
 	super initialize.
 	
-	numberConverter := GtCrasherNumberConverter new
+	numberConverter := GtCrasherNumberConverter default.
+
+	words := self generateWords: 50000.
+	instVars := (1 to: 10000) collect: [ :i | self generateInstVars ]
+]
+
+{ #category : #generation }
+GtCrasherClassGenerator >> pickInstVars [
+	^ instVars atRandom
+]
+
+{ #category : #generation }
+GtCrasherClassGenerator >> pickWords: anAmount [
+	^ ((1 to: anAmount) collect: [ :i | words atRandom ]) copyWithoutDuplicates
 ]

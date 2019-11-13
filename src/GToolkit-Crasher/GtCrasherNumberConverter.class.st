@@ -3,11 +3,23 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'alphabet',
-		'size',
-		'numberConverter'
+		'size'
+	],
+	#classInstVars : [
+		'uniqueInstance'
 	],
 	#category : #'GToolkit-Crasher'
 }
+
+{ #category : #accessing }
+GtCrasherNumberConverter class >> cleanUp [
+	uniqueInstance := nil
+]
+
+{ #category : #accessing }
+GtCrasherNumberConverter class >> default [
+	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
+]
 
 { #category : #converting }
 GtCrasherNumberConverter >> convertToBase26: aNumber [
