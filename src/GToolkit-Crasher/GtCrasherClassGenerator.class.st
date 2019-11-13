@@ -1,3 +1,9 @@
+"
+GtCrasherClassGenerator new
+  createClassesPrefixed: 'GtCrasherGenerated'
+  packaged: 'GToolkit-CrasherGenerated'
+  amount: 1
+"
 Class {
 	#name : #GtCrasherClassGenerator,
 	#superclass : #Object,
@@ -19,15 +25,20 @@ GtCrasherClassGenerator >> createClassPrefixed: aPrefix packaged: aPackageName i
 GtCrasherClassGenerator >> createClassesPrefixed: aPrefix packaged: aPackageName amount: aClassCount [
 	| aMethodGenerator theMethodPrefixes |
 	
-	aMethodGenerator := GtCrasherMethodGenerator new.
-	theMethodPrefixes := self generateWords: 20.
+	EpMonitor current disable.
+	[ 
 	
-	1 to: aClassCount do: [ :aClassIndex |
-		| eachClass |
+		aMethodGenerator := GtCrasherMethodGenerator new.
+		theMethodPrefixes := self generateWords: 20.
 		
-		eachClass := self createClassPrefixed: aPrefix packaged: aPackageName index: aClassIndex.
-		1 to: (20 to: 200) atRandom do: [ :aMethodIndex |
-			aMethodGenerator compileMethodNamed: theMethodPrefixes atRandom, (numberConverter convertToBase26: aMethodIndex) inClass: eachClass ] ]
+		1 to: aClassCount do: [ :aClassIndex |
+			| eachClass |
+			
+			eachClass := self createClassPrefixed: aPrefix packaged: aPackageName index: aClassIndex.
+			1 to: (20 to: 200) atRandom do: [ :aMethodIndex |
+				aMethodGenerator compileMethodNamed: theMethodPrefixes atRandom, (numberConverter convertToBase26: aMethodIndex) inClass: eachClass ] ]
+
+	] ensure: [ EpMonitor current enable ]
 ]
 
 { #category : #private }

@@ -7,7 +7,5 @@ Class {
 { #category : #baselines }
 BaselineOfGToolkitCrasher >> baseline: spec [
 	<baseline>
-	spec for: #'common' do: [
-		spec package: 'GToolkit-Crasher'.
-		spec package: 'GToolkit-CrasherGenerated' ].
+	spec for: #'common' do: [ spec package: 'GToolkit-Crasher' ].
 ]
