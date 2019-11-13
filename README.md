@@ -1,7 +1,19 @@
-# gc-crash-tester
+# gtoolkit-crasher
 I contain a lot of auto generated code to reproduce garbage collector crash
 
-## Load
+## Load generated code
+
+```smalltalk
+EpMonitor current disable.
+[ 
+  Metacello new
+    baseline: 'GToolkitCrasherGenerated';
+    repository: 'github://feenkcom/gtoolkit-crasher/src';
+    load
+] ensure: [ EpMonitor current enable ].
+```
+
+## Load generators
 
 ```smalltalk
 EpMonitor current disable.
