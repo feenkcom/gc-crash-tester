@@ -17,6 +17,13 @@ Class {
 
 { #category : #private }
 GtCrasherClassGenerator >> createClassPrefixed: aPrefix packaged: aPackageName index: aNumber [
+	| aClassName |
+	
+	aClassName := (self generateClassNamePrefix: aPrefix index: aNumber) asSymbol.
+	self class environment
+		at: aClassName
+		ifPresent: [ ^ nil ].
+
 	^ Object subclass: (self generateClassNamePrefix: aPrefix index: aNumber) asSymbol
 		instanceVariableNames: self pickInstVars
 		classVariableNames: ''
@@ -37,11 +44,12 @@ GtCrasherClassGenerator >> createClassesPrefixed: aPrefix packaged: aPackageName
 			| eachClass |
 			
 			eachClass := self createClassPrefixed: aPrefix packaged: aPackageName index: aClassIndex.
-			1 to: (20 to: 200) atRandom do: [ :aMethodIndex |
-				| aMethodName |
-				
-				aMethodName := String streamContents: [ :aStream | aStream nextPutAll: theMethodPrefixes atRandom; nextPutAll: (numberConverter convertToBase26: aMethodIndex) ].
-				aMethodGenerator compileMethodNamed: aMethodName inClass: eachClass ] ]
+			eachClass ifNotNil: [
+				1 to: (20 to: 200) atRandom do: [ :aMethodIndex |
+					| aMethodName |
+					
+					aMethodName := String streamContents: [ :aStream | aStream nextPutAll: theMethodPrefixes atRandom; nextPutAll: (numberConverter convertToBase26: aMethodIndex) ].
+					aMethodGenerator compileMethodNamed: aMethodName inClass: eachClass ] ] ]
 		displayingProgress:[ :aClassIndex | 'Generating class {1} out of {2}' format: { aClassIndex . aClassCount } ]
 
 	] ensure: [ EpMonitor current enable ]
