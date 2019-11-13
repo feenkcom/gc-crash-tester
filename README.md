@@ -3,7 +3,7 @@ I contain a lot of auto generated code to reproduce garbage collector crash
 
 ## Load
 
-```
+```smalltalk
 EpMonitor current disable.
 [ 
   Metacello new
