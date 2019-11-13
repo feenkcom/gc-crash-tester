@@ -31,12 +31,13 @@ GtCrasherClassGenerator >> createClassesPrefixed: aPrefix packaged: aPackageName
 		aMethodGenerator := GtCrasherMethodGenerator new.
 		theMethodPrefixes := self generateWords: 20.
 		
-		1 to: aClassCount do: [ :aClassIndex |
+		(1 to: aClassCount) do:[ :aClassIndex | 
 			| eachClass |
 			
 			eachClass := self createClassPrefixed: aPrefix packaged: aPackageName index: aClassIndex.
 			1 to: (20 to: 200) atRandom do: [ :aMethodIndex |
 				aMethodGenerator compileMethodNamed: theMethodPrefixes atRandom, (numberConverter convertToBase26: aMethodIndex) inClass: eachClass ] ]
+		displayingProgress:[ :aClassIndex | 'Generating class {1} out of {2}' format: { aClassIndex . aClassCount } ]
 
 	] ensure: [ EpMonitor current enable ]
 ]
